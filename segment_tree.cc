@@ -1,10 +1,11 @@
 // For Google Phone Interview.
 // Author: kevinew.1221@gmail.com (Wenkai Liu)
+// Date: 2014.3.27
 
 /* Description:
-   对外面的很多矩形建筑物拍一张照片，求出外面多锯齿状的外形轮廓。
+   窗外有很多矩形建筑物，站在窗口用相机拍一张照片，求出照片中许多建筑物重叠后出现的锯齿状的外形轮廓。
    Analyze:
-   use the segment tree to solve it.
+   Using the segment tree to solve it.
  */
 
 #include<iostream>
