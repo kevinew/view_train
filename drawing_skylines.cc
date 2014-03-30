@@ -82,7 +82,6 @@ void UpdateTree(Node** r, Node* line) {
 
 }
 
-
 void Insert(Node line) {
   Node *building = new Node(line);
   UpdateTree(&root, building);
@@ -115,7 +114,6 @@ void SetResult(Node *r) {
 void NormalizeResult() {
   // When there is blank space between 2 building.
   vector<POINT>::iterator it;
-  // for (int i = 0; i < surface.size(); ++i) {
   int cnt = 0;
   for (it = surface.begin(); it != surface.end(); ++it, ++cnt) {
     if (0 == cnt) continue;
@@ -147,7 +145,6 @@ void NormalizeResult() {
     point.h = 0;
     surface.push_back(point);
   }
-
 }
 
 void Run(vector<Node> buildings) {
@@ -168,7 +165,11 @@ void Run(vector<Node> buildings) {
 
 int main(int argc, char **argv) {
   vector<struct Node> buildings;
-  
+#ifndef  ONLINE_JUDGE
+  freopen("input.txt", "r", stdin);
+  freopen("output.txt", "w", stdout);
+#endif
+
   // TODO(wenkailiu): refactor
   int n;
   if (EOF != scanf("%d", &n)) {
