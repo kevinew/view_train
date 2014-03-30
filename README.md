@@ -1,4 +1,4 @@
-view_train
+Training
 ==========
 
 Training code for future.
