@@ -2,11 +2,10 @@
 // Author: kevinew.1221@gmail.com (Wenkai Liu)
 // Date: 2014.3.27
 
-/* Description:
-   窗外有很多矩形建筑物，站在窗口用相机拍一张照片，求出照片中许多建筑物重叠后出现的锯齿状的外形轮廓。
-   Analyze:
-   Using the segment tree to solve it.
- */
+// Description:
+//   窗外有很多矩形建筑物，站在窗口用相机拍一张照片，求出照片中许多建筑物重叠后出现的锯齿状的外形轮廓。
+//   Analyze:
+//   Using the binary tree or segment tree to solve it.
 
 #include<iostream>
 
