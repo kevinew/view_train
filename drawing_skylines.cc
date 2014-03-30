@@ -17,7 +17,7 @@ using namespace std;
 typedef struct Point {
   int h, x;
 } POINT;
-vector<POINT> surface;
+vector<POINT> surface, raw_surface;
 
 struct Node {
   Node():left(NULL), right(NULL) {}
@@ -112,12 +112,29 @@ void SetResult(Node *r) {
   SetResult(r->right);
 }
 
-void Run(vector<Node> buildings) {
-  for (int i = 0; i < buildings.size(); ++i) {
-    Insert(buildings[i]);
+void NormalizeResult() {
+  // When there is blank space between 2 building.
+  vector<POINT>::iterator it;
+  // for (int i = 0; i < surface.size(); ++i) {
+  int cnt = 0;
+  for (it = surface.begin(); it != surface.end(); ++it, ++cnt) {
+    if (0 == cnt) continue;
+    if (cnt & 1) {
+      if (it + 1 != surface.end()  && it->x != (it + 1)->x) {
+        POINT point1;
+        point1.x = it->x;
+        point1.h = 0;
+        surface.insert(it + 1, point1);
+        POINT point2;
+        point2.x = (it + 2)->x;
+        point2.h = 0;
+        surface.insert(it + 2, point2);
+        cnt += 2;
+        it += 2;
+      }
+    }
   }
 
-  SetResult(root);
   if (surface.front().h > 0) {
     POINT point;
     point.x = surface.front().x;
@@ -131,16 +148,28 @@ void Run(vector<Node> buildings) {
     surface.push_back(point);
   }
 
-  cout << surface.size() << endl;
+}
+
+void Run(vector<Node> buildings) {
+  for (int i = 0; i < buildings.size(); ++i) {
+    Insert(buildings[i]);
+  }
+
+  SetResult(root);
+  NormalizeResult();
+
+  // cout << surface.size() << endl;
+  printf("%d\n", (int)surface.size());
   for (int i = 0; i < surface.size(); ++i) {
-    cout << surface[i].x << " " << surface[i].h << endl;
+    printf("%d %d\n", surface[i].x, surface[i].h);
+    // cout << surface[i].x << " " << surface[i].h << endl;
   }
 }
 
 int main(int argc, char **argv) {
   vector<struct Node> buildings;
   
-  // TODO(wenkailiu): initialize building
+  // TODO(wenkailiu): refactor
   int n;
   if (EOF != scanf("%d", &n)) {
     for (int i = 0; i < n; ++i) {
