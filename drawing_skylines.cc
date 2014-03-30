@@ -27,17 +27,11 @@ struct Node {
 } *root;
 
 void UpdateTree(Node** r, Node* line) {
-  cout << "update tree.1" << endl;
   if (NULL == line || line->y - line->x == 0) return;
-  cout << "update tree.2" << endl;
   if (NULL == *r) {
-    // *r = *line;
-    cout << "update tree.3" << endl;
     *r = line;
-    cout << "update tree.4" << endl;
     return;
   }
-  cout << "update tree." << endl;
   // 两条线段左右两端完全对qi的情况
   if ((*r)->x == line->x && (*r)->y == line->y ) {
     if ((*r)->h < line->h) (*r)->h = line->h;
@@ -92,7 +86,6 @@ void UpdateTree(Node** r, Node* line) {
 void Insert(Node line) {
   Node *building = new Node(line);
   UpdateTree(&root, building);
-  cout << "Insert done." << endl;
 }
 
 // Extract result - inorder traversal.
@@ -124,9 +117,7 @@ void Run(vector<Node> buildings) {
     Insert(buildings[i]);
   }
 
-  cout << "Run.1" << endl;
   SetResult(root);
-  cout << "Run.2" << endl;
   if (surface.front().h > 0) {
     POINT point;
     point.x = surface.front().x;
@@ -161,10 +152,6 @@ int main(int argc, char **argv) {
         building.y = tmp;
       }
       buildings.push_back(building);
-    }
-    for (int i = 0; i < buildings.size(); ++i) {
-      cout << "building:" << buildings[i].x << " " << buildings[i].y << " "
-        << buildings[i].h << endl;
     }
     Run(buildings);
   }
