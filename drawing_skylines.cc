@@ -20,67 +20,69 @@ typedef struct Point {
 vector<POINT> surface;
 
 struct Node {
+  Node():left(NULL), right(NULL) {}
+  ~Node() {}
   int h, x, y;
   Node *left, *right;
 } *root;
 
-void UpdateTree(Node* r, Node* line) {
+void UpdateTree(Node** r, Node* line) {
   cout << "update tree.1" << endl;
   if (NULL == line || line->y - line->x == 0) return;
   cout << "update tree.2" << endl;
-  if (NULL == r) {
+  if (NULL == *r) {
     // *r = *line;
     cout << "update tree.3" << endl;
-    *r = *line;
+    *r = line;
     cout << "update tree.4" << endl;
     return;
   }
   cout << "update tree." << endl;
   // 两条线段左右两端完全对qi的情况
-  if (r->x == line->x && r->y == line->y ) {
-    if (r->h < line->h) r->h = line->h;
+  if ((*r)->x == line->x && (*r)->y == line->y ) {
+    if ((*r)->h < line->h) (*r)->h = line->h;
     return;
   }
 
   // line和当前节点无重合
-  if (line->x >= r->y) {
-    UpdateTree(r->right, line);
+  if (line->x >= (*r)->y) {
+    UpdateTree(&((*r)->right), line);
     return;
-  } else if (line->y <= r->x) {
-    UpdateTree(r->left, line);
+  } else if (line->y <= (*r)->x) {
+    UpdateTree(&((*r)->left), line);
     return;
   }
 
   // longer or shorter compared to r left point.
-  if (line->x < r->x) { // long
+  if (line->x < (*r)->x) { // long
     Node* line1 = new Node(*line);
-    line1->y = r->x;
-    UpdateTree(r->left, line1);
-    line->x = r->x;
+    line1->y = (*r)->x;
+    UpdateTree(&((*r)->left), line1);
+    line->x = (*r)->x;
     UpdateTree(r, line);
-  } else if (line->x > r->x) { // short
-    Node* node = new Node(*r);
+  } else if (line->x > (*r)->x) { // short
+    Node* node = new Node(*(*r));
     node->y = line->x;
     node->right = NULL;
-    node->left = r->left;
-    r->left = node;
-    r->x = line->x;
+    node->left = (*r)->left;
+    (*r)->left = node;
+    (*r)->x = line->x;
     UpdateTree(r, line);
   }
   // longer or shorter compared to r right point.
-  if (line->y > r->y) {
+  if (line->y > (*r)->y) {
     Node* line1 = new Node(*line);
-    line1->x = r->y;
-    UpdateTree(r->right, line1);
-    line->y = r->y;
+    line1->x = (*r)->y;
+    UpdateTree(&((*r)->right), line1);
+    line->y = (*r)->y;
     UpdateTree(r, line);
-  } else if (line->y > r->y) {
-    Node* node = new Node(*r);
+  } else if (line->y > (*r)->y) {
+    Node* node = new Node(*(*r));
     node->x = line->y;
     node->left = NULL;
-    node->right = r->right;
-    r->right = node;
-    r->y = line->y;
+    node->right = (*r)->right;
+    (*r)->right = node;
+    (*r)->y = line->y;
     UpdateTree(r, line);
   }
 
@@ -89,19 +91,31 @@ void UpdateTree(Node* r, Node* line) {
 
 void Insert(Node line) {
   Node *building = new Node(line);
-  UpdateTree(root, building);
+  UpdateTree(&root, building);
   cout << "Insert done." << endl;
 }
 
+// Extract result - inorder traversal.
 void SetResult(Node *r) {
   if (NULL == r) return;
 
   SetResult(r->left);
-  POINT point;
-  point.x = r->x;
-  point.h = r->h;
-  surface.push_back(point);
-  // cout << r->x << " " << r->y << " " << r->h << endl;
+  if (surface.size() >= 2 && surface.back().h == r->h) {
+    surface.resize(surface.size() - 1);
+    POINT point_r;
+    point_r.x = r->y;
+    point_r.h = r->h;
+    surface.push_back(point_r);
+  } else {
+    POINT point_l;
+    point_l.x = r->x;
+    point_l.h = r->h;
+    surface.push_back(point_l);
+    POINT point_r;
+    point_r.x = r->y;
+    point_r.h = r->h;
+    surface.push_back(point_r);
+  }
   SetResult(r->right);
 }
 
@@ -112,16 +126,17 @@ void Run(vector<Node> buildings) {
 
   cout << "Run.1" << endl;
   SetResult(root);
+  cout << "Run.2" << endl;
   if (surface.front().h > 0) {
     POINT point;
     point.x = surface.front().x;
-    point.h = surface.front().h;
+    point.h = 0;
     surface.insert(surface.begin(), point);
   }
   if (surface.back().h > 0) {
     POINT point;
     point.x = surface.back().x;
-    point.h = surface.back().h;
+    point.h = 0;
     surface.push_back(point);
   }
 
@@ -136,7 +151,7 @@ int main(int argc, char **argv) {
   
   // TODO(wenkailiu): initialize building
   int n;
-  while(scanf("%d", &n) != EOF) {
+  if (EOF != scanf("%d", &n)) {
     for (int i = 0; i < n; ++i) {
       Node building;
       scanf("%d%d%d",&building.h, &building.x, &building.y);
