@@ -17,7 +17,7 @@ using namespace std;
 typedef struct Point {
   int h, x;
 } POINT;
-vector<POINT> surface, raw_surface;
+vector<POINT> surface, final_surface;
 
 struct Node {
   Node():left(NULL), right(NULL) {}
@@ -70,7 +70,7 @@ void UpdateTree(Node** r, Node* line) {
     UpdateTree(&((*r)->right), line1);
     line->y = (*r)->y;
     UpdateTree(r, line);
-  } else if (line->y > (*r)->y) {
+  } else if (line->y < (*r)->y) {
     Node* node = new Node(*(*r));
     node->x = line->y;
     node->left = NULL;
@@ -114,58 +114,54 @@ void SetResult(Node *r) {
 void NormalizeResult() {
   // When there is blank space between 2 building.
   vector<POINT>::iterator it;
-  int cnt = 0;
-  for (it = surface.begin(); it != surface.end(); ++it, ++cnt) {
-    if (0 == cnt) continue;
-    if (cnt & 1) {
-      if (it + 1 != surface.end()  && it->x != (it + 1)->x) {
+  int cnt = 0, pre_x;
+  // for (it = surface.begin(); it != surface.end(); ++it, ++cnt) {
+  for (int i = 0; i < surface.size(); ++i) {
+    final_surface.push_back(surface[i]);
+    if (i % 2 == 1 && i < surface.size() - 1) {
+      if (surface[i].x != surface[i+1].x) {
+        vector<POINT> to_insert;
         POINT point1;
-        point1.x = it->x;
+        point1.x = surface[i].x;
         point1.h = 0;
-        surface.insert(it + 1, point1);
         POINT point2;
-        point2.x = (it + 2)->x;
+        point2.x = surface[i+1].x;
         point2.h = 0;
-        surface.insert(it + 2, point2);
+        final_surface.push_back(point1);
+        final_surface.push_back(point2);
         cnt += 2;
-        it += 2;
       }
     }
   }
 
-  if (surface.front().h > 0) {
+  if (final_surface.front().h > 0) {
     POINT point;
-    point.x = surface.front().x;
+    point.x = final_surface.front().x;
     point.h = 0;
-    surface.insert(surface.begin(), point);
+    final_surface.insert(final_surface.begin(), point);
   }
-  if (surface.back().h > 0) {
+  if (final_surface.back().h > 0) {
     POINT point;
-    point.x = surface.back().x;
+    point.x = final_surface.back().x;
     point.h = 0;
-    surface.push_back(point);
+    final_surface.push_back(point);
   }
 }
 
-void Run(vector<Node> buildings) {
-  for (int i = 0; i < buildings.size(); ++i) {
-    Insert(buildings[i]);
-  }
-
+void Run() {
   SetResult(root);
   NormalizeResult();
 
   // cout << surface.size() << endl;
-  printf("%d\n", (int)surface.size());
-  for (int i = 0; i < surface.size(); ++i) {
-    printf("%d %d\n", surface[i].x, surface[i].h);
+  printf("%d\n", (int)final_surface.size());
+  for (int i = 0; i < final_surface.size(); ++i) {
+    printf("%d %d\n", final_surface[i].x, final_surface[i].h);
     // cout << surface[i].x << " " << surface[i].h << endl;
   }
 }
 
 int main(int argc, char **argv) {
-  vector<struct Node> buildings;
-#ifndef  ONLINE_JUDGE
+#ifdef  ONLINE_JUDGE
   freopen("input.txt", "r", stdin);
   freopen("output.txt", "w", stdout);
 #endif
@@ -181,9 +177,9 @@ int main(int argc, char **argv) {
         building.x = building.y;
         building.y = tmp;
       }
-      buildings.push_back(building);
+      Insert(building);
     }
-    Run(buildings);
+    Run();
   }
 
   return 0;
