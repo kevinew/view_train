@@ -1,4 +1,4 @@
-// For Google Phone Interview.
+// GPhone.
 // Author: kevinew.1221@gmail.com (Wenkai Liu)
 // Date: 2014.3.27
 
@@ -8,9 +8,9 @@
 //   Using the binary tree or segment tree to solve it.
 // OJ:  http://codeforces.com/contest/35/problem/E
 
-#include<stdio.h>
-#include<vector>
-#include<iostream>
+#include <iostream>
+#include <stdio.h>
+#include <vector>
 
 using namespace std;
 
@@ -27,7 +27,10 @@ struct Node {
 } *root;
 
 void UpdateTree(Node** r, Node* line) {
-  if (NULL == line || line->y - line->x == 0) return;
+  if (NULL == line || line->y - line->x == 0) {
+    delete line;
+    return;
+  }
   if (NULL == *r) {
     *r = line;
     return;
@@ -35,7 +38,15 @@ void UpdateTree(Node** r, Node* line) {
   // 两条线段左右两端完全对qi的情况
   if ((*r)->x == line->x && (*r)->y == line->y ) {
     if ((*r)->h < line->h) (*r)->h = line->h;
+    delete line;
     return;
+  }
+
+  if ((*r)->x <= line->x && (*r)->y >= line->y ) {
+    if ((*r)->h >= line->h) {
+      delete line;
+      return;
+    }
   }
 
   // line和当前节点无重合
@@ -54,6 +65,7 @@ void UpdateTree(Node** r, Node* line) {
     UpdateTree(&((*r)->left), line1);
     line->x = (*r)->x;
     UpdateTree(r, line);
+  // } else if (line->x > (*r)->x && line->h > (*r)->h) { // short
   } else if (line->x > (*r)->x) { // short
     Node* node = new Node(*(*r));
     node->y = line->x;
@@ -70,6 +82,7 @@ void UpdateTree(Node** r, Node* line) {
     UpdateTree(&((*r)->right), line1);
     line->y = (*r)->y;
     UpdateTree(r, line);
+  // } else if (line->y < (*r)->y && line->h > (*r)->h) {
   } else if (line->y < (*r)->y) {
     Node* node = new Node(*(*r));
     node->x = line->y;
